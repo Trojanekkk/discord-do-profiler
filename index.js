@@ -127,7 +127,7 @@ function printAllUsers (msg) {
         history += "\n" + profiles[i]['nick']
         historyLen = profiles[i]['history'].length
         if (profiles[i]['nick'] != profiles[i]['history'][historyLen-1]['nick'])
-            history += " (" + profiles[i]['history'][historyLen-1]['nick'] + ")"
+            history += " (aktualnie: " + profiles[i]['history'][historyLen-1]['nick'] + ")"
 
         // for (j=0; j < profiles[i]['history'].length; j++) {
         //     history += "\nod " + profiles[i]['history'][j]['date'] + " jako " + profiles[i]['history'][j]['nick']
