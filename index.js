@@ -120,11 +120,18 @@ function printUser (msg, userdata) {
 function printAllUsers (msg) {
     const profiles = JSON.parse(fs.readFileSync('./profiles.json'))
 
+    let iteration = 0
     let history = ""
     for (i=0; i < profiles.length; i++) {
+        iteration++
         history += "\n" + profiles[i]['nick']
         for (j=0; j < profiles[i]['history'].length; j++) {
             history += "\nod " + profiles[i]['history'][j]['date'] + " jako " + profiles[i]['history'][j]['nick']
+        }
+        if (iteration >= 10) {
+            msg.channel.send(history)
+            history = ""
+            iteration = 0
         }
     }
     msg.channel.send(history)
