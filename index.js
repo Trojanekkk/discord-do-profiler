@@ -120,8 +120,9 @@ function printUser (msg, userdata) {
 function printAllUsers (msg) {
     const profiles = JSON.parse(fs.readFileSync('./profiles.json'))
 
+        let history = ""
     for (i=0; i < profiles.length; i++) {
-        let history = profiles[i]['nick']
+        history += "\n" + profiles[i]['nick']
         for (j=0; j < profiles[i]['history'].length; j++) {
             history += "\nod " + profiles[i]['history'][j]['date'] + " jako " + profiles[i]['history'][j]['nick']
         }
