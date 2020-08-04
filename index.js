@@ -125,10 +125,14 @@ function printAllUsers (msg) {
     for (i=0; i < profiles.length; i++) {
         iteration++
         history += "\n" + profiles[i]['nick']
-        for (j=0; j < profiles[i]['history'].length; j++) {
-            history += "\nod " + profiles[i]['history'][j]['date'] + " jako " + profiles[i]['history'][j]['nick']
-        }
-        if (iteration >= 10) {
+        historyLen = profiles[i]['history'].length
+        if (profiles[i]['nick'] != profiles[i]['history'][historyLen-1]['nick'])
+            history += " (" + profiles[i]['history'][historyLen-1]['nick'] + ")"
+
+        // for (j=0; j < profiles[i]['history'].length; j++) {
+        //     history += "\nod " + profiles[i]['history'][j]['date'] + " jako " + profiles[i]['history'][j]['nick']
+        // }
+        if (iteration >= 20) {
             msg.channel.send(history)
             history = ""
             iteration = 0
