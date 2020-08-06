@@ -28,6 +28,7 @@ bot.on('message', msg => {
             msg.channel.send("pong")
             break
 
+        case "dodaj":
         case "obserwuj":
             if (args.length > 1)
                 addUser(msg, args[1])
@@ -35,6 +36,11 @@ bot.on('message', msg => {
                 msg.channel.send("Daj mi link do profilu")
             break
 
+        case "skomentuj":
+            // addComment(msg, args[1], args)
+            msg.channel.send("To jeszcze nie działa")
+
+        case "szczegóły":
         case "historia":
             if (args.length > 1)
                 printUser(msg, args[1])
@@ -42,6 +48,7 @@ bot.on('message', msg => {
                 msg.channel.send("Daj mi link do profilu albo nick")
             break
 
+        case "wszystkie":
         case "wszyscy":
             printAllUsers(msg)
             break
@@ -95,6 +102,10 @@ function addUser (msg, link) {
             console.log("error" + error);
             msg.channel.send("Coś nie zadziałało, niech Maksim sprawdzi co poszło nie tak")
         })
+}
+
+function addComment (msg, user, args) {
+
 }
 
 function printUser (msg, userdata) {
