@@ -118,9 +118,9 @@ function printUser (msg, userdata) {
     
     if (profile.length > 0) {
         for (i=0; i < profile.length; i++) {
-            let history = profile[i]['nick']
+            let history = addEsc(profile[i]['nick'])
             for (j=0; j < profile[i]['history'].length; j++) {
-                history += "\nod " + profile[i]['history'][j]['date'] + " jako " + profile[i]['history'][j]['nick']
+                history += "\nod " + profile[i]['history'][j]['date'] + " jako " + addEsc(profile[i]['history'][j]['nick'])
             }
             msg.channel.send(history)
         }
@@ -136,10 +136,10 @@ function printAllUsers (msg) {
     let history = ""
     for (i=0; i < profiles.length; i++) {
         iteration++
-        history += "\n" + profiles[i]['nick']
+        history += "\n" + addEsc(profiles[i]['nick'])
         historyLen = profiles[i]['history'].length
         if (profiles[i]['nick'] != profiles[i]['history'][historyLen-1]['nick'])
-            history += " (aktualnie: " + profiles[i]['history'][historyLen-1]['nick'] + ")"
+            history += " (aktualnie: " + addEsc(profiles[i]['history'][historyLen-1]['nick']) + ")"
 
         // for (j=0; j < profiles[i]['history'].length; j++) {
         //     history += "\nod " + profiles[i]['history'][j]['date'] + " jako " + profiles[i]['history'][j]['nick']
@@ -183,6 +183,10 @@ async function updateAllUsers (msg) {
     fs.writeFileSync('./profiles.json' ,JSON.stringify(profiles))
     if (msg)
         msg.channel.send("Wszystkie profile już aktualne")
+}
+
+function addEsc (nick) {
+    return nick.split("_").join("\\_").split("*").join("\\*")
 }
 
 
