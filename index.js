@@ -1,4 +1,5 @@
 const discord = require('discord.js')
+const cron = require('cron')
 const rp = require('request-promise')
 const fs = require('fs')
 const $ = require('cheerio')
