@@ -10,7 +10,7 @@ const bot = new discord.Client()
 const token = 'NzQwMTg3NDY4NzExNTkxOTY2.XylXTA.evCNOEo2TvNrueAqcgSRstoD8Qk'
 const PREFIX = '!'
 const url = 'https://pl3.darkorbit.com/index.es?profile=6nPGm&profileCheck=JSXal&lang=pl'
-const job = cron.job('0 */6 * * *', updateAllUsers(false))
+const job = cron.job('0 */12 * * *', updateAllUsers(false))
 
 
 bot.on('ready', () => {
