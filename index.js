@@ -4,13 +4,13 @@ const rp = require('request-promise')
 const fs = require('fs')
 const $ = require('cheerio')
 const lodash = require('lodash')
-const { log, profile } = require('console')
 
 
 const bot = new discord.Client()
 const token = 'NzQwMTg3NDY4NzExNTkxOTY2.XylXTA.evCNOEo2TvNrueAqcgSRstoD8Qk'
 const PREFIX = '!'
 const url = 'https://pl3.darkorbit.com/index.es?profile=6nPGm&profileCheck=JSXal&lang=pl'
+const job = cron.job('0 */6 * * *', updateAllUsers(false))
 
 
 bot.on('ready', () => {
@@ -175,12 +175,14 @@ async function updateAllUsers (msg) {
             })
             .catch(function(error){
                 console.log("error" + error);
-                msg.channel.send("Coś nie zadziałało, niech Maksim sprawdzi co poszło nie tak")
+                if (msg)
+                    msg.channel.send("Coś nie zadziałało, niech Maksim sprawdzi co poszło nie tak")
             })
     }
     
     fs.writeFileSync('./profiles.json' ,JSON.stringify(profiles))
-    msg.channel.send("Wszystkie profile już aktualne")
+    if (msg)
+        msg.channel.send("Wszystkie profile już aktualne")
 }
 
 
