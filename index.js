@@ -2,6 +2,7 @@ const discord = require('discord.js')
 const cron = require('cron')
 const rp = require('request-promise')
 const fs = require('fs')
+const moment = require('moment')
 const $ = require('cheerio')
 const lodash = require('lodash')
 
@@ -13,15 +14,24 @@ const url = 'https://pl3.darkorbit.com/index.es?profile=6nPGm&profileCheck=JSXal
 const job = cron.job('0 */12 * * *', updateAllUsers(false))
 
 
+let timeNow = () => moment().format('YYYY-MM-DD hh:mm:ss')
+let dateNow = () => moment().format('YYYY-MM-DD')
+let log = (data) => {
+    fs.appendFileSync('./do-profiler.log', timeNow() + ' ' + data + '\n')
+}
+
+
 bot.on('ready', () => {
     console.log("The Bot is online")
+    log('The Bot is online')
 })
 
 
 bot.on('message', msg => {
     if (msg.content.indexOf(PREFIX) != 0)
         return 0
-    
+
+    log('New order: ' + msg.content + '(' + msg.author.username + ')')    
     let args = msg.content.substring(PREFIX.length).split(" ")
 
     switch (args[0]) {
@@ -80,6 +90,7 @@ function addUser (msg, link) {
             if (lodash.filter(profiles, { history : [{ "nick" : nickname }]}).length > 0) {
                 msg.channel.send("Już obserwuję tego gracza")
                 printUser(msg, nickname)
+                log('The player ' + nickname + ' is already followed')
                 return 0
             }
 
@@ -98,10 +109,12 @@ function addUser (msg, link) {
             
             fs.writeFileSync('./profiles.json' ,JSON.stringify(profiles))
             msg.channel.send('Aha, obserwuję ' + nickname)
+            log('Followe new player ' + nickname)
         })
         .catch(function(error){
-            console.log("error" + error);
+            console.log("error" + error)
             msg.channel.send("Coś nie zadziałało, niech Maksim sprawdzi co poszło nie tak")
+            log('Error occured: ' + error)
         })
 }
 
@@ -123,9 +136,11 @@ function printUser (msg, userdata) {
                 history += "\nod " + profile[i]['history'][j]['date'] + " jako " + addEsc(profile[i]['history'][j]['nick'])
             }
             msg.channel.send(history)
+            log('Send profile ' + profile[i]['nick'])
         }
     } else {
         msg.channel.send("Jeszcze nie obserwuj takiego gracza")
+        log('Not found user profile: ' + userdata)
     }
 }
 
@@ -151,6 +166,7 @@ function printAllUsers (msg) {
         }
     }
     msg.channel.send(history)
+    log('Send all followed users')
 }
 
 async function updateAllUsers (msg) {
@@ -177,12 +193,14 @@ async function updateAllUsers (msg) {
                 console.log("error" + error);
                 if (msg)
                     msg.channel.send("Coś nie zadziałało, niech Maksim sprawdzi co poszło nie tak")
+                log('Error occured: ' + error)
             })
     }
     
     fs.writeFileSync('./profiles.json' ,JSON.stringify(profiles))
     if (msg)
         msg.channel.send("Wszystkie profile już aktualne")
+    log('Update all profiles')
 }
 
 function addEsc (nick) {
