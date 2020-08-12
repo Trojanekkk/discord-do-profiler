@@ -1,5 +1,5 @@
 const discord = require('discord.js')
-const cron = require('cron')
+const cron = require('node-cron')
 const rp = require('request-promise')
 const fs = require('fs')
 const moment = require('moment')
@@ -7,11 +7,12 @@ const $ = require('cheerio')
 const lodash = require('lodash')
 
 
+const CONF = JSON.parse(fs.readFileSync('./config.json'))
 const bot = new discord.Client()
-const token = 'NzQwMTg3NDY4NzExNTkxOTY2.XylXTA.evCNOEo2TvNrueAqcgSRstoD8Qk'
-const PREFIX = '!'
-const url = 'https://pl3.darkorbit.com/index.es?profile=6nPGm&profileCheck=JSXal&lang=pl'
-const job = cron.job('0 */12 * * *', updateAllUsers(false))
+const token = CONF['token']
+const PREFIX = CONF['prefix']
+const task = cron.schedule('0 */12 * * *', () => updateAllUsers(false))
+task.start()
 
 
 let timeNow = () => moment().format('YYYY-MM-DD hh:mm:ss')
@@ -86,6 +87,9 @@ function addUser (msg, link) {
     rp(link)
         .then(function(html) {
             let nickname = $('#nickname', html).text().trim()
+            let stats = $('.playerTableBody', html).toArray().map(
+                item => $(item).text().trim()
+            )
 
             if (lodash.filter(profiles, { history : [{ "nick" : nickname }]}).length > 0) {
                 msg.channel.send("Już obserwuję tego gracza")
@@ -102,9 +106,19 @@ function addUser (msg, link) {
                 "history" : [
                     {
                         "nick" : nickname,
-                        "date" : (new Date()).toLocaleDateString()
+                        "date" : dateNow()
                     }
-                ]
+                ],
+                "stats": {
+                    "rank" : stats[0],            
+                    "top" : stats[1],
+                    "level" : stats[2],
+                    "company" : stats[3],
+                    "memberSince" : stats[4],
+                    "gameHours" : stats[5],
+                    "pp" : stats[6],
+                    "date" : dateNow()
+                }
             })
             
             fs.writeFileSync('./profiles.json' ,JSON.stringify(profiles))
@@ -180,14 +194,31 @@ async function updateAllUsers (msg) {
         await rp(link)
             .then(function (html) {
                 let nickname = $('#nickname', html).text().trim()
+                let stats = $('.playerTableBody', html).toArray().map(
+                    item => $(item).text().trim()
+                )
 
                 if (nickname != lastNick)
                     profiles[i]['history'].push(
                         {
                             "nick" : nickname,
-                            "date" : (new Date()).toLocaleDateString()
+                            "date" : dateNow()
                         }
                     )
+
+                profiles[i]['stats'].push(
+                    {
+                        "rank" : stats[0],            
+                        "top" : stats[1],
+                        "level" : stats[2],
+                        "company" : stats[3],
+                        "memberSince" : stats[4],
+                        "gameHours" : stats[5],
+                        "pp" : stats[6],
+                        "date" : dateNow()
+                    }
+                )
+                
             })
             .catch(function(error){
                 console.log("error" + error);
