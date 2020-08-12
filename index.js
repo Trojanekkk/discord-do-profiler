@@ -189,6 +189,7 @@ async function updateAllUsers (msg) {
     for (i=0; i < profiles.length; i++) {
         historyLen = profiles[i]['history'].length
         lastNick = profiles[i]['history'][historyLen-1]['nick']
+        lastStatsUpdate = profiles[i]['stats']['date']
         link = profiles[i]['link']
 
         await rp(link)
@@ -206,18 +207,19 @@ async function updateAllUsers (msg) {
                         }
                     )
 
-                profiles[i]['stats'].push(
-                    {
-                        "rank" : stats[0],            
-                        "top" : stats[1],
-                        "level" : stats[2],
-                        "company" : stats[3],
-                        "memberSince" : stats[4],
-                        "gameHours" : stats[5],
-                        "pp" : stats[6],
-                        "date" : dateNow()
-                    }
-                )
+                if (lastStatsUpdate == dateNow())
+                    profiles[i]['stats'].push(
+                        {
+                            "rank" : stats[0],            
+                            "top" : stats[1],
+                            "level" : stats[2],
+                            "company" : stats[3],
+                            "memberSince" : stats[4],
+                            "gameHours" : stats[5],
+                            "pp" : stats[6],
+                            "date" : dateNow()
+                        }
+                    )
                 
             })
             .catch(function(error){
