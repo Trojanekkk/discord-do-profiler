@@ -11,7 +11,7 @@ const CONF = JSON.parse(fs.readFileSync('./config.json'))
 const bot = new discord.Client()
 const token = CONF['token']
 const PREFIX = CONF['prefix']
-const task = cron.schedule('0 */12 * * *', () => updateAllUsers(false))
+const task = cron.schedule('0 */24 * * *', () => updateAllUsers(false))
 task.start()
 
 
