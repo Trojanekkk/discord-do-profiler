@@ -145,10 +145,17 @@ function printUser (msg, userdata) {
     
     if (profile.length > 0) {
         for (i=0; i < profile.length; i++) {
+            let statsLen = profile[i]['stats'].length - 1
             let history = addEsc(profile[i]['nick'])
             for (j=0; j < profile[i]['history'].length; j++) {
                 history += "\nod " + profile[i]['history'][j]['date'] + " jako " + addEsc(profile[i]['history'][j]['nick'])
             }
+            history += "\nRanga: " + profile[i]['stats'][statsLen]['rank']
+                        + " (" + profile[i]['stats'][statsLen]['company'] + ")"
+            history += "\nRanking: " + profile[i]['stats'][statsLen]['top']
+            history += "\nPoziom: " + profile[i]['stats'][statsLen]['level']
+            history += "\nCzłonek od: " + profile[i]['stats'][statsLen]['memberSince'] 
+                        + " (" + profile[i]['stats'][statsLen]['gameHours'] + ")"
             msg.channel.send(history)
             log('Send profile ' + profile[i]['nick'])
         }
