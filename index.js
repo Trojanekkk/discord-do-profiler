@@ -109,7 +109,7 @@ function addUser (msg, link) {
                         "date" : dateNow()
                     }
                 ],
-                "stats": {
+                "stats": [{
                     "rank" : stats[0],            
                     "top" : stats[1],
                     "level" : stats[2],
@@ -118,7 +118,7 @@ function addUser (msg, link) {
                     "gameHours" : stats[5],
                     "pp" : stats[6],
                     "date" : dateNow()
-                }
+                }]
             })
             
             fs.writeFileSync('./profiles.json' ,JSON.stringify(profiles))
@@ -196,7 +196,8 @@ async function updateAllUsers (msg) {
     for (i=0; i < profiles.length; i++) {
         historyLen = profiles[i]['history'].length
         lastNick = profiles[i]['history'][historyLen-1]['nick']
-        lastStatsUpdate = profiles[i]['stats']['date']
+        statsLen = profiles[i]['stats'].length
+        lastStatsUpdate = profiles[i]['stats'][statsLen-1]['date']
         link = profiles[i]['link']
 
         await rp(link)
@@ -214,7 +215,7 @@ async function updateAllUsers (msg) {
                         }
                     )
 
-                if (lastStatsUpdate == dateNow())
+                if (lastStatsUpdate != dateNow())
                     profiles[i]['stats'].push(
                         {
                             "rank" : stats[0],            
