@@ -1,7 +1,9 @@
+const spawn = require("child_process").spawn;
+const fs = require('fs')
+
 const discord = require('discord.js')
 const cron = require('node-cron')
 const rp = require('request-promise')
-const fs = require('fs')
 const moment = require('moment')
 const $ = require('cheerio')
 const lodash = require('lodash')
@@ -60,6 +62,13 @@ bot.on('message', msg => {
                 msg.channel.send("Daj mi link do profilu albo nick")
             break
 
+        case "wykres":
+            if (args.length > 1)
+                getChart(msg, args[1])
+            else
+                msg.channel.send("Daj mi link do profilu albo nick")
+            break
+
         case "wszystkie":
         case "wszyscy":
             printAllUsers(msg)
@@ -72,7 +81,7 @@ bot.on('message', msg => {
         case "":
         case "komendy":
             msg.channel.send(
-                '"!obserwuj <link do profilu>" - dodaj gracza do obserwowanych\n "!historia <link do profilu>" - wyświetl historię nicków gracza\n "!historia <nick>" - wyświetl historię nicków gracza\n "!wszyscy" - wyświetla wszystkie zapisane konta i historie\n "!aktualizuj" - aktualizuje nicki wszystkich obserwowanych'
+                '"!obserwuj <link do profilu>" - dodaj gracza do obserwowanych\n "!historia <link do profilu>" - wyświetl historię nicków gracza\n "!wykres <nick>" - wyświetla wykres rankingu \n "!historia <nick>" - wyświetl historię nicków gracza\n "!wszyscy" - wyświetla wszystkie zapisane konta i historie\n "!aktualizuj" - aktualizuje nicki wszystkich obserwowanych'
             )
             break
         default:
@@ -242,6 +251,45 @@ async function updateAllUsers (msg) {
     if (msg)
         msg.channel.send("Wszystkie profile już aktualne")
     log('Update all profiles')
+}
+
+function getChart (msg, userdata, stat='top') {
+    const profiles = JSON.parse(fs.readFileSync('./profiles.json'))
+
+    let profile = lodash.filter(profiles, { history : [{ "nick" : userdata }]})
+    if (profile.length == 0)
+        profile = lodash.filter(profiles, { "link" : userdata })
+    
+    if (profile.length > 0) {
+        for (i=0; i < profile.length; i++) {
+            let historyLen = profile[i]['history'].length
+            let lastNick = profile[i]['history'][historyLen-1]['nick']
+            let statsLen = profile[i]['stats'].length
+            let statDateArr = []
+            let statValArr = []
+            for (j=0; j < statsLen; j++) {
+                statDateArr.push(profile[i]['stats'][j]['date'])
+                statValArr.push(profile[i]['stats'][j][stat])
+            }
+
+            const pyProc = spawn(CONF['pythonExec'], ["./drawChart.py", statDateArr, statValArr])
+
+            pyProc.stdout.on('data', (data) => {
+                let chartPath = data.toString().replace('\\', '/').trim()
+                msg.channel.send("Wykres dla " + lastNick, {
+                    files: [chartPath]
+                })
+                .then(() => {
+                    fs.unlinkSync(chartPath)
+                    log('Create chart (' + stat + ') for ' + userdata)
+                })
+                .catch((err) => console.log(err))
+            })
+        }
+    } else {
+        msg.channel.send("Jeszcze nie obserwuje takiego gracza")
+        log('Not found user profile: ' + userdata)
+    }
 }
 
 function addEsc (nick) {
