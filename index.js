@@ -7,11 +7,12 @@ const rp = require('request-promise')
 const moment = require('moment')
 const $ = require('cheerio')
 const lodash = require('lodash')
+const dotenv = require('dotenv')
 
-
+dotenv.config()
 const CONF = JSON.parse(fs.readFileSync('./config.json'))
 const bot = new discord.Client()
-const token = CONF['token']
+const token = process.env.token
 const PREFIX = CONF['prefix']
 const task = cron.schedule('0 1 * * *', () => updateAllUsers(false))
 task.start()
@@ -272,9 +273,13 @@ function getChart (msg, userdata, stat='top') {
                 statValArr.push(profile[i]['stats'][j][stat])
             }
 
+            console.log(lastNick)
+            console.log(statDateArr)
+
             const pyProc = spawn(CONF['pythonExec'], ["./drawChart.py", statDateArr, statValArr])
 
             pyProc.stdout.on('data', (data) => {
+                console.log(data.toString())
                 let chartPath = data.toString().replace('\\', '/').trim()
                 msg.channel.send("Wykres dla " + lastNick, {
                     files: [chartPath]

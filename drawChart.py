@@ -1,6 +1,9 @@
 import sys
 import time
 
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 
 x = sys.argv[1].split(',')
