@@ -12,7 +12,6 @@ const dotenv = require('dotenv')
 dotenv.config()
 const CONF = JSON.parse(fs.readFileSync('./config.json'))
 const bot = new discord.Client()
-const token = process.env.token
 const PREFIX = CONF['prefix']
 const task = cron.schedule('0 1 * * *', () => updateAllUsers(false))
 task.start()
@@ -306,4 +305,7 @@ function addEsc (nick) {
 }
 
 
-bot.login(token)
+bot.login(process.env.token)
+    .catch(err => {
+        throw err
+    })
