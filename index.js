@@ -43,6 +43,10 @@ bot.on('message', msg => {
             msg.channel.send("pong")
             break
 
+        case "miałł":
+            msg.channel.send("miau!")
+            break
+
         case "dodaj":
         case "obserwuj":
             if (args.length > 1)
