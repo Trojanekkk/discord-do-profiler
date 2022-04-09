@@ -18,7 +18,7 @@
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.19",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "node-cron": "^2.0.3",
     "request": "^2.88.2",
     "request-promise": "^4.2.6"
